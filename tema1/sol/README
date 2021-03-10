@@ -1,0 +1,48 @@
+            Algoritmi Paraleli si Distribuiti
+                Tema 1
+                    Bogdan - Andrei Buga, 332CB
+
+Observatie: In tema s-au folosit doua notatii diferite:
+    - "_J", care corespunde etapelor de generare a fractalului Julia;
+    - "_M", care corespunde etapelor de generare a fractalului Mandelbrot.
+
+    Pentru inceput, executabilul obtinut din compilarea fisierului sursa 
+"tema1_par.c" trebuie neaparat sa fie rulat cu alti 5 parametrii:
+    - fisierul de intrare pentru fractalul Julia;
+    - fisierul de iesire pentru fractalul Julia;
+    - fisierul de intrare pentru fractalul Mandelbrot;
+    - fisierul de iesire pentru fractalul Mandelbrot;
+    - numarul de thread-uri pe care se va executa programul.
+
+    Dupa extragerea parametrilor din fisierele de intrare, se vor calcula
+dimensiunile imaginilor rezultate. Pentru o paralelizare corecta asupra
+mai multor operatii pe orice matrice, va trebui, dupa fiecare operatie,
+sa punem toate thread-urile pe "asteptare" cu ajutorul unei bariere.
+
+    Voi folosi urmatoarea conventie:
+    - (P) = operatie ce se executa pe toate thread-urile;
+    - (S) = operatie ce se executa pe un singur thread; am ales thread-ul 0,
+deoarece este singurul thread care exista pentru orice numar de thread-uri
+create).
+
+    Operatiile care se executa pe thread-uri sunt:
+    
+    A. Generarea si afisarea in fisier a fractalului Julia
+        1.(S) Alocarea memoriei pentru matricea Julia
+        2.(P) Alocarea memoriei pe toate liniile
+              si calculul multimii Julia
+        3.(S) Scrierea rezultatului calculului multimii Julia
+              transformat in coordonate "ecran" intr-un fisier de tip PGM
+        4. Eliberarea memoriei alocate dinamic
+            4.a(P) Eliberarea memoriei matricei pe linii
+            4.b(S) Eliberarea memoriei matricei
+
+    B. Generarea si afisarea in fisier a fractalului Mandelbrot
+        1.(S) Alocarea memoriei pentru matricea Mandelbrot
+        2.(P) Alocarea memoriei pe toate liniile
+              si calculul multimii Mandelbrot
+        3.(S) Scrierea rezultatului calculului multimii Mandelbrot
+              transformat in coordonate "ecran" intr-un fisier de tip PGM
+        4. Eliberarea memoriei alocate dinamic
+            4.a(P) Eliberarea memoriei matricei pe linii
+            4.b(S) Eliberarea memoriei matricei

@@ -1,0 +1,25 @@
+1.
+
+
+1.3
+L = {ww | w in {0, 1}*}
+
+Presupunem ca L este un limbaj liber de context.
+Atunci, din lema de pompare, exista o lungime p a.i.
+pt. orice cuvant s=uvwxy, avem:
+	|vwx| <= p
+	|vx| >= 1
+	u(v^n)w(x^n)y este tot in L, pt. orice n nr. natural.
+Putem lua s = (0^p)(1^p)(0^p)(1^p), cu w = (1^p)(1^p).
+
+Avem 3 cazuri:
+	1. vwx este in jumatatea din stanga.
+	   n = 2 => in cuvantul |u(v^2)w(x^2)y|, am adaugat p caractere
+	   => am "mutat" jumatatea cuvantului cu p/2 caractere
+	   Caracterul de la jumatate continua cu 1, dar cuvnatul incepe cu 0. CONTRADICTIE
+	2. vwx este in jumatatea din dreapta. Se trateaza analog ca mai sus.
+
+	3. vwx este la mijloc.
+	   n = 0 => uwy
+	   |vwx| <= p => Am scos o parte din 1-urile si 0-urile din mijloc, dar nu si pe cele din margini.
+	   Deci uwy = (0^p)(1^k)(0^m)(1^p), unde k < p sau m < p, si cuvantul rezultat nu mai este de forma ww.

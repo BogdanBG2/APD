@@ -1,0 +1,100 @@
+            Algoritmi Paraleli si Distribuiti
+                Tema 2
+                    Bogdan - Andrei Buga, 332CB
+
+MASTER
+
+	Se deschide fisierul de intrare cate o data pe fiecare din cele 4
+thread-uri pornite si se citesc liniile fisierului pe toate thread-urile.
+Stocarea datelor de procesat si retinerea numarului de paragrafe este realizata
+pe un singur thread. Pentru ca numarul de paragrafe sa fie actualizat si pe
+celelalte 3 thread-uri, acest numar este trimis, prin MPI, pe ruta 0-0 de 3
+ori, cate o data pentru fiecare alt thread.
+	Fiecare thread va itera prin paragrafele citite si va determina cate
+dintre acestea trebuie trimise catre workerul corespunzator si care sunt aceste
+paragrafe.
+	Se trimite, mai intai, numarul de paragrafe de procesat catre workerul
+adecvat. Apoi, datorita unor dificultati tehnice, este necesar ca fiecare
+thread sa intre intr-o zona critica atunci cand trimite paragraful brut si
+primeste paragraful modificat.
+	Inainte de scrierea in fisierul de iesire, trebuie sa punem o bariera
+pe toate thread-urile, astfel incat sa avem toate paragrafele modificate
+inainte de pasul final.
+
+WORKER
+	
+	Se primeste, pentru inceput, numarul de paragrafe pe care workerul
+curent trebuie sa le proceseze.
+	Acesta primeste, iterativ, fiecare paragraf specific, il imparte dintr-un
+sir simplu de caractere intr-un vector de siruri de caractere, fiecare element
+reprezentand cate o linie din paragraful primit.
+	Se seteaza numarul P de thread-uri necesare pentru procesarea
+paragrafului si se pornesc P thread-uri, fiecare modificand maxim 20 de linii.
+	Dupa ce toate thread-urile si-au terminat treaba, paragraful este
+reconstruit din liniile noi si trimis inapoi la master.
+
+
+EXEMPLU PROCESARE LINII IN PARALEL
+	Consideram linia paragrafului cu genul ca fiind linia 0.	
+	Daca avem un paragraf de 167 de linii si 5 thread-uri disponibile,
+impartirea este facuta astfel:
+	Thread 1 : 1 - 20
+	Thread 2 : 21 - 40
+	Thread 3 : 41 - 60
+	Thread 4 : 61 - 80
+	Thread 5 : 81 - 100
+	Thread 1 : 101 - 120
+	Thread 2 : 121 - 140
+	Thread 3 : 141 - 160
+	Thread 4 : 161 - 167
+
+	Daca Thread 1 isi termina primul interval, acesta va trece imediat la
+al doilea interval, indiferent daca celelalte thread-uri au terminat sau nu
+primul lor interval. Astfel, vor fi mereu maxim 5 thread-uri care modifica
+in paralele textul, fiecare procesand maxim 20 de linii.
+	Am ales aceasta abordare pentru ca deschiderea si oprirea thread-urilor
+de mai multe ori in acelasi program este un procedeu ineficient si consider
+ca metoda de rezolvare aleasa respecta regulile din cerinta.
+
+ALGORITMII DE MODIFICARE A LINIILOR (fisierele "string_operations")
+
+	HORROR
+		Fie sirul (S1)C(S2), unde C este o consoana.
+		Rezultatul dorit este ((S1)C) concatenat cu (c(S2)), unde c
+	este C scris cu litera mica.
+
+	COMEDY
+		Atunci cand ajungem la un cuvant nou, initializam o variabila de
+	pozitie cu 1, pe care o crestem la fiecare iteratie in sir. Atunci cand
+	aceasta variabila ajunge sa aiba o valoare para, litera de pe pozitia
+	curenta este rescrisa cu litera mare.
+
+	FANTASY
+		Atunci cand ajungem la un cuvant nou, prima litera a acestuia
+	este rescrisa cu litera mare.
+
+	SCIENCE-FICTION
+		Luam o variabila in care retinem prin cate cuvinte am iterat.
+	Atunci cand, cu ajutorul acestei variabile, ne dam seama ca am ajuns la
+	un cuvant de ordin multiplu de 7, cautam cei 2 indicii intre care se
+	afla acest cuvant si inversam toate caracterele din intervalul rezultat.
+
+Mentoinez suplimentar ca deschid fisierul de 4 ori, cate o data pe fiecare
+thread al masterului, dar checker-ul local nu detecteaza acest lucru. :(
+
+FEEDBACK
+	Consider ca aceasta tema ar fi fost mult mai usoara si mult mai clara
+daca ar fi fost mai bine explicate de la inceput anumite aspecte lamurite mai
+tarziu pe forum, si anume:
+	- un exemplu mai bun cu ce se intampla cu paragrafele de tip
+science-fiction;
+	- de unde se incepe numaratoarea la paragrafele de tip comedy;
+	- limitele maxime ale datelor de prelucrat:
+		- 900 000 de caractere / paragraf;
+		- 2 500 de linii / paragraf;
+		- 1 000 de caractere / linie;
+		- 500 de paragrafe / fisier;
+	- metoda de citire pe fiecare thread a datelor in master;
+	- cum se impart thread-urile daca avem mai mult de 20 * (MAX_PROC - 1) 
+de linii de prelucrat, unde MAX_PROC = numarul maxim de thread-uri pe care le
+putem rula simultan pe calulatorul de fata.
